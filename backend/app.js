@@ -1,24 +1,28 @@
 //framework express
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const path = require('path');
+const express = require("express");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const path = require("path");
 //sécurise req http, en-tête, etc..
 const helmet = require("helmet");
 
 //import route sauce
-const sauceRoutes = require('./routes/sauce');
+const sauceRoutes = require("./routes/sauce");
 
 // import route user
-const userRoutes = require('./routes/user');
+const userRoutes = require("./routes/user");
 
 //permet la connexion à mongodb
-mongoose.connect('mongodb+srv://antoine:lozach@antoine.z7lcs.mongodb.net/?retryWrites=true&w=majority', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-    .then(() => console.log('Connexion à MongoDB réussie !'))
-    .catch(() => console.log('Connexion à MongoDB échouée !'));
+mongoose
+  .connect(
+    "mongodb+srv://lozach:lozach@cluster0.kgyhb9s.mongodb.net/?retryWrites=true&w=majority",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
+  .then(() => console.log("Connexion à MongoDB réussie !"))
+  .catch(() => console.log("Connexion à MongoDB échouée !"));
 
 //création application express
 const app = express();
@@ -26,32 +30,40 @@ const app = express();
 //intercept req. json mis ds body.req
 app.use(express.json());
 
-//permet aux utilisateurs d'accéder à l'api pour faire des requetes 
+//permet aux utilisateurs d'accéder à l'api pour faire des requetes
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.setHeader('Content-Security-Policy', "default-src 'self'");
-    next();
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+  );
+  res.setHeader("Content-Security-Policy", "default-src 'self'");
+  next();
 });
 
 //parse req mis ds req.body
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 
 //req post en json
 app.use(bodyParser.json());
 
-app.use(helmet({ crossOriginResourcePolicy: false, }));
+app.use(helmet({ crossOriginResourcePolicy: false }));
 
 //charge images du dossier images
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 //router pour ttes req. vers /api/sauces
-app.use('/api/sauces', sauceRoutes);
+app.use("/api/sauces", sauceRoutes);
 
 //router pr ttes req. vers /api/auth
-app.use('/api/auth', userRoutes);
+app.use("/api/auth", userRoutes);
 
 module.exports = app;
